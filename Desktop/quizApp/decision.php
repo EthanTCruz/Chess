@@ -19,20 +19,14 @@ $page->finalizeBottomSection();
 	
 
 	$username = $_POST["user"];
+	//password is "test"
 	$hashedPass = '$2y$10$m7dDo6/UNts/GIHKYdR/GuJC98c84xUrSXhcPWsJz.heGCtMPDQQa';
+	//student password is "student"
 	$hashedStud = '$2y$10$6VOU/3oQl.lprKoJojOqo.r008btgvMBQvNmhpu5HoBQ0kxYzl7Iq';
 	$ans = $_POST["ans"];
 
 
-if (isset($ans)) {
-$_SESSION['isLoggedIn']=true;
-header("Location: user.php");
-
-} else if ((password_verify($_POST['pass'],$hashedPass))&&($username == 'ethan')) {
-$_SESSION['isLoggedIn']=true;
-header("Location: home.php");
-
-} else  if ((password_verify($_POST['pass'],$hashedStud))&&($username == 'student')) {
+if ((password_verify($_POST['pass'],$hashedStud))&&($username == 'student')) {
 $_SESSION['isLoggedIn']=true;
 header("Location: user.php");
 

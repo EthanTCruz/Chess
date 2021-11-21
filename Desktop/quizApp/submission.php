@@ -2,10 +2,11 @@
 session_start();
 
 
-//if(!isset($_SESSION['isLoggedIn'])) {
-//header("Location: webSignIn.php");
-//} 
-//if($_SESSION['isLoggedIn']===true) {
+
+if(!isset($_SESSION['isLoggedIn'])) {
+header("Location: webSignIn.php");
+} 
+if($_SESSION['isLoggedIn']===true) {
 
 print "<!DOCTYPE html>";
 print "<html lang='en'>";
@@ -17,8 +18,10 @@ print "<div></div>";
 print "</body>";
 print "</html>";
  
-//}
+} else {
+header("Location: webSignIn.php");
+}
  
-
+session_destroy();
 
 ?>
