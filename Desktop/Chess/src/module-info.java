@@ -3,5 +3,4 @@ module chess {
 	exports boardFunctions;
 
 	requires junit;
-	requires org.junit.jupiter.api;
 }

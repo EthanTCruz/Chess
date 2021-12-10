@@ -11,7 +11,12 @@ public class Play {
 
 	static boolean valid = true;
 	
-
+	
+	//arrays for each side to determine whether or not castling is possible
+	//index 0 equals columns 1-4
+	//index 1 equals columns 5-8
+	static boolean[] castleW = new boolean[] {true, true};
+	static boolean[] castleB = new boolean[] {true,true};
 	
 	static int currPieceX;
 	static int currPieceY;
@@ -21,7 +26,7 @@ public class Play {
 	
 	static int[] currMoves = new int[0];
 	
-
+//	static int[] enPosit = new int[0];
 
 	
 
@@ -164,16 +169,124 @@ public class Play {
 
 	}
 
+	
+	public static int[] enPMoves() {
+
+		int[] enPosit = new int[0];
+	
+		int inY = log[log.length-3];
+		int finX = log[log.length-2];
+		int finY = log[log.length-1];
+		char Piece = board[finY][finX].charAt(0);
+		char side = board[finY][finX].charAt(1);
+		String rP;
+		if(Piece == 'P') {
+			if(side == 'W') {
+				if (finY-inY==2) {
+					rP = board[finY][finX-1];
+					System.out.println(rP);
+					if ((rP.charAt(0)=='P')&&(rP.charAt(1)=='B')) {
+						enPosit = enlarge(enPosit,finX-1,finY);
+						enPosit = enlarge(enPosit,finX,finY-1);
+					}
+					rP = board[finY][finX+1];
+					System.out.println(rP);
+					if ((rP.charAt(0)=='P')&&(rP.charAt(1)=='B')) {
+						enPosit = enlarge(enPosit,finX+1,finY);
+						enPosit = enlarge(enPosit, finX,finY-1);
+					}
+						
+					
+				}
+			} else if(side == 'B') {
+				
+			}
+				if (inY-finY==2) {
+					rP = board[finY][finX-1];
+					System.out.println(rP);
+					if ((rP.charAt(0)=='P')&&(rP.charAt(1)=='W')) {
+						enPosit = enlarge(enPosit,finX-1,finY);
+						enPosit = enlarge(enPosit,finX,finY+1);
+					}
+					rP = board[finY][finX+1];
+					System.out.println(rP);
+					if ((rP.charAt(0)=='P')&&(rP.charAt(1)=='W')) {
+						enPosit = enlarge(enPosit,finX+1,finY);
+						enPosit = enlarge(enPosit,finX,finY+1);
+					}
+				
+			}
+		}
+
+
+		return enPosit;
+	}
+	
+	public static boolean checkEn(int x1, int y1, int x2, int y2) {
+		//xy1 vals represent init move
+		//xy2 vals represent enP move to be done
+		boolean en = false;
+		int[] valids = enPMoves();
+		//enP returns list of valid init positions to execute 
+		int i = valids.length;
+		
+		for (int n = 0; n<i; n=n+4) {
+		    if ((x1 == valids[n])&&(y1 == valids[n+1])&&(x2==valids[n+2])&&(y2==valids[n+3])) {
+		    	
+		        if( perfEnP(x1,y1,x2,y2) == true) {
+		        return true;
+		        }
+		    }
+		}
+		
+		return en;
+	}
+	
+	public static boolean perfEnP(int x1, int y1, int x2, int y2) {
+		boolean accomp = true;
+		String init = board[y1][x1];
+		String finMove = board[y2][x2];
+		String erP = board[y2-1][x2];
+		
+		if (curr=='W') {
+			board[y2][x2] = init;
+			board[y1][x1] = "  ";
+			board[y2-1][x2] = "  ";
+			
+
+		} else {
+			board[y2][x2] = init;
+			board[y1][x1] = "  ";
+			board[y2+1][x2] = "  ";
+		}
+		
+		if (!kingCheck()==false) {
+			board[y2-1][x2] = erP;
+			board[y2][x2] = finMove;
+			board[y1][x1] = init;
+			accomp = false;
+			return accomp;
+		}
+		
+		changeTurn();
+		return accomp;
+	}
+
+	public static void checkCastle () {
+		
+		
+		
+	}
+	
 	public static int[] showMoves(int x1, int y1) {
 		char Piece = board[y1][x1].charAt(0);
 		char side = board[y1][x1].charAt(1);
 		currPieceX = x1;
 		currPieceY = y1;
-		
+
 		checkMove = new int[0];
 		
-//		int enX = log[log.length-2];
-//		int enY = log[log.length-1];
+
 
 		// coding for W
 		if (side == getCurr()) {
@@ -447,20 +560,35 @@ public class Play {
 
 
 	
-
+	
 	
 	public static void move(int x1, int y1, int x2, int y2) {
 
+		
+		
 		if (check(x1, y1, x2, y2) == true) {
 			String temp;
 			 temp = board[y2][x2];
 			board[y2][x2] = board[y1][x1];
 			board[y1][x1] = "  ";
 			
-
+			//move goes through if king is put in check otherwise board reverts to normal
 		if(kingCheck()==false) {
 			moveLog(x1, y1);
 			moveLog(x2, y2);
+			if (curr=='W') {
+				if((x1 == 8)&&(y1==1)) {
+					castleW[1] = false;
+				} else if((x1 == 1)&&(y1==1)) {
+					castleW[0] = false;
+				}
+			} else {
+				if((x1 == 8)&&(y1==8)) {
+					castleB[1] = false;
+				} else if((x1 == 1)&&(y1==8)) {
+					castleB[0] = false;
+				}
+			}
 			changeTurn();
 			if(kingFind(curr)[0] == 0) {
 				System.out.print(opp + " wins!!!");
@@ -471,9 +599,18 @@ public class Play {
 			valid = false;
 			System.out.println("invalid move: " + x1+y1+x2+y2 );
 		}
-		} else {
+		} else if(checkEn(x1,y1,x2,y2)){
+			if(kingCheck()==false) {
+				moveLog(x1, y1);
+				moveLog(x2, y2);
+//				changeTurn();
+				if(kingFind(curr)[0] == 0) {
+					System.out.print(opp + " wins!!!");
+				}
+		}else{
 			valid = false;
 			System.out.println("invalid move: " + x1+y1+x2+y2 );
+		}
 		}
 		noteBoard();
 
@@ -530,7 +667,9 @@ public class Play {
 		return getLog();
 	}
 
-	public static void enlarge(int[] currArray, int x, int y) {
+	
+	
+	public static int[] enlarge(int[] currArray, int x, int y) {
 		int[] temp = new int[currArray.length + 2];
 		int i = currArray.length + 2;
 
@@ -541,6 +680,7 @@ public class Play {
 		currArray = temp;
 		currArray[i - 2] = x;
 		currArray[i - 1] = y;
+		return currArray;
 	}
 
 	public static int[] addArr(int[] a, int[] b) {
@@ -728,11 +868,30 @@ public class Play {
 	
 	public static void main(String[] args) {
 		resetBoard();
-		move(1,2,1,3);
-		changeTurn();
-		move(1,3,1,4);
+
+		move(4,2,4,4);
+		move(1,7,1,5);
+		move(4,4,4,5);
+		move(1,5,1,4);
+		move(2,2,2,4);
+		move(1,4,1,3);
+		move(2,4,2,5);
+		move(3,7,3,5);
+		move(2,5,3,6);
+		move(8,7,8,5);
+		
 		showBoard();
 		System.out.println(Arrays.toString(log));
+		System.out.println(Arrays.toString(enPMoves()));
+//		System.out.println(checkEn(2,5,3,6));
+		showBoard();
+
+		
+
+
+		
+
+				
 
 
 //		noteBoard();

@@ -13,7 +13,7 @@ $page->finalizeTopSection();
 $page->finalizeBottomSection();
 
 if(!isset($_SESSION['isLoggedIn'])) {
-header("Location: webSignIn.php");
+header("Location: signIn.php");
 } 
 if($_SESSION['isLoggedIn']===true) {
     $_SESSION['isLoggedIn']=true;

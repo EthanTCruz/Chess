@@ -50,6 +50,7 @@ $client->setPostFields($data);
 	$results = json_decode($info);
 $role=$results->role;
 
+
 if ($role=="user"){
 	$_SESSION['isLoggedIn']=true;
 header("Location: user.php");
@@ -60,7 +61,7 @@ header("Location: user.php");
 } else  {
 
 $_SESSION['message']="<div class = 'alert alert-danger'>Please enter valid credentials</div>";
-header("Location: webSignIn.php");
+header("Location: signIn.php");
 
 
 }
