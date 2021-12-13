@@ -63,6 +63,18 @@ public class Test_Play {
 		Play.showBoard();
 		
 	}
+	
+	@Test
+	public void castleKTest() {
+		Play.move(5,2,5,4);
+		Play.move(5,7,5,5);
+		Play.move(7,1,6,3);
+		Play.move(2,8,3,6);
+		Play.move(6,1,3,4);
+		Play.move(7,8,6,6);
+		Play.move(5,1,7,1);
+		
+	}
 
 
 
